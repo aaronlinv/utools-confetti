@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>撒花</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: transparent !important;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confetti"></canvas>
+    <script>
+        console.log('页面开始加载')
+        window.onerror = function(msg, url, line) {
+            console.error('错误:', msg, 'at', url, ':', line)
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="confetti.js"></script>
+</body>
+</html> 
