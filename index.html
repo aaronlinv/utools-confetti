@@ -5,20 +5,37 @@
     <title>撒花</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            background: transparent !important;
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
         }
     </style>
+    <script>
+        // 全局错误处理
+        window.onerror = function(msg, url, line) {
+            console.error('错误:', msg, 'at', url, ':', line);
+            utools.showNotification('发生错误: ' + msg);
+        }
+    </script>
 </head>
 <body>
     <canvas id="confetti"></canvas>
+    <script src="lib/confetti.browser.min.js"></script>
     <script>
-        console.log('页面开始加载')
-        window.onerror = function(msg, url, line) {
-            console.error('错误:', msg, 'at', url, ':', line)
+        // 确保 confetti 库加载成功
+        if (typeof window.confetti !== 'function') {
+            console.error('confetti 库加载失败');
+            utools.showNotification('confetti 库加载失败');
+        } else {
+            console.log('confetti 库加载成功');
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="confettiGun.js"></script>
     <script src="confetti.js"></script>
 </body>
 </html> 

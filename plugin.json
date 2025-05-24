@@ -1,19 +1,17 @@
 {
-    "name": "demo-helloworld",
     "version": "1.0.0",
-    "pluginName": "demo-helloworld",
-    "description": "helloworld示例插件",
+    "pluginName": "礼花",
+    "description": "庆祝一下！一键发射全屏五彩纸屑 confetti",
     "logo": "logo.png",
     "preload": "preload.js",
     "features": [
         {
             "code": "confetti",
-            "explain": "helloworld示例插件",
+            "explain": "发射全屏五彩纸屑",
             "cmds": [
+                "礼花",
                 "撒花",
                 "庆祝",
-                "五彩纸屑",
-                "彩带",
                 "confetti"
             ]
         }

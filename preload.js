@@ -6,11 +6,26 @@ window.exports = {
             // 进入插件时调用
             enter: ({ code, type, payload }) => {
                 try {
-                    utools.showNotification('开始创建撒花窗口')
-                    // 使用 uTools API 创建窗口
+                    utools.hideMainWindow()
+
+                    // 1. 获取鼠标位置
+                    const { x, y } = utools.getCursorScreenPoint()
+
+                    // 2. 获取鼠标所在显示器
+                    const display = utools.getDisplayNearestPoint({ x, y })
+                    if (!display) {
+                        utools.showNotification('未找到鼠标所在的显示器', 'error')
+                        utools.outPlugin()
+                        return
+                    }
+
+                    // 3. 只在该显示器创建撒花窗口
+                    const { x: dx, y: dy, width, height } = display.bounds
                     const win = utools.createBrowserWindow('index.html', {
-                        width: window.screen.width,
-                        height: window.screen.height,
+                        x: dx,
+                        y: dy,
+                        width,
+                        height,
                         frame: false,
                         transparent: true,
                         hasShadow: false,
@@ -23,34 +38,15 @@ window.exports = {
                             backgroundThrottling: false
                         }
                     })
+                    win.setIgnoreMouseEvents(true, { forward: true })
 
-                    // 将窗口引用保存到全局变量，并暴露给渲染进程
-                    window.confettiWindow = win
-                    win.webContents.executeJavaScript(`
-                        window.confettiWindowId = ${win.id};
-                    `)
-
-                    // 监听窗口加载完成
-                    win.webContents.on('did-finish-load', () => {
-                        utools.showNotification('撒花窗口加载完成')
-                    })
-
-                    // 监听窗口错误
-                    win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-                        utools.showNotification('窗口加载失败: ' + errorDescription, 'error')
-                        win.close()
-                    })
-
-                    // 监听关闭窗口请求
-                    utools.ipcRenderer.on('close-confetti-window', (event, windowId) => {
-                        if (window.confettiWindow && window.confettiWindow.id === windowId) {
-                            window.confettiWindow.close()
-                            window.confettiWindow = null
-                        }
-                    })
+                    // utools.showNotification('撒花窗口创建完成')
                 } catch (error) {
                     utools.showNotification('创建窗口失败: ' + error.message, 'error')
                 }
+                // 这里不能 kill 否则动画窗口会一起关闭
+                utools.outPlugin()
+                // utools.showNotification('撒花 插件退出')
             }
         }
     }
