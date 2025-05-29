@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- You can @ files here
+- You can use markdown but dont have to
+这是一个 uTools 插件项目，uTools 禁止直接访问 Electron 模块，需要使用 uTools 封装的 API
+
+utools.createBrowserWindow 返回的 BrowserWindow 由 uTools 定制，大部分的函数和属性都是继承 Electron 的 BrowserWindow。注意：不包含 BrowserWindow 和 webContents 的实例事件
+
+uTools 不支持 utools.ipcRenderer
+也不支持：window.require

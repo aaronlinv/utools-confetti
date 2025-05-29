@@ -13,7 +13,8 @@
                 "撒花",
                 "庆祝",
                 "confetti"
-            ]
+            ],
+            "mainHide": true
         }
     ]
 }
