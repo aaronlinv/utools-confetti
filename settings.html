@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>礼花设置</title>
+    <style>
+        /* 防止闪烁的关键样式 - 放在最前面 */
+        body {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        body.loaded {
+            opacity: 1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .settings-container {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+
+        .save-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: transform 0.2s;
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .save-button:active {
+            transform: translateY(0);
+        }
+
+        .status-message {
+            text-align: center;
+            margin-top: 16px;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="header">
+            <h1>🎉 礼花设置</h1>
+            <p>自定义你的庆祝体验</p>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-label">
+                <div class="setting-title">音效</div>
+                <div class="setting-description">播放礼花音效</div>
+            </div>
+            <div class="toggle-switch" id="soundToggle"></div>
+        </div>
+        <div class="setting-item" id="fullscreenSettingItem" style="display: none;">
+            <div class="setting-label">
+                <div class="setting-title">强制全屏</div>
+                <div class="setting-description">多显示器等场景下全屏异常时启用</div>
+            </div>
+            <div class="toggle-switch" id="fullscreenToggle"></div>
+        </div>
+    </div>
+
+    <script src="lib/configManager.js"></script>
+    <script>
+        // 创建配置管理器实例
+        const configManager = new window.ConfigManager();
+
+        // 立即初始化，防止闪烁
+        (function() {
+            // 获取DOM元素
+            const soundToggle = document.getElementById('soundToggle');
+            const fullscreenToggle = document.getElementById('fullscreenToggle');
+            const fullscreenSettingItem = document.getElementById('fullscreenSettingItem');
+
+            // 检测系统类型并控制全屏选项显示
+            function checkSystemAndShowFullscreenOption() {
+                const isMacOS = utools.isMacOS();
+                if (isMacOS) {
+                    // macOS 系统隐藏全屏选项
+                    fullscreenSettingItem.style.display = 'none';
+                } else {
+                    // 非 macOS 系统显示全屏选项
+                    fullscreenSettingItem.style.display = 'flex';
+                }
+            }
+
+            // 加载设置
+            function loadSettings() {
+                try {
+                    const soundEnabled = configManager.getSoundSetting();
+                    const fullscreenEnabled = configManager.getFullscreenSetting();
+                    
+                    if (soundEnabled) {
+                        soundToggle.classList.add('active');
+                    } else {
+                        soundToggle.classList.remove('active');
+                    }
+                    if (fullscreenEnabled) {
+                        fullscreenToggle.classList.add('active');
+                    } else {
+                        fullscreenToggle.classList.remove('active');
+                    }
+                } catch (error) {
+                    utools.showNotification('加载设置失败:' + error.message);
+                }
+            }
+
+            // 保存设置
+            function saveSettings() {
+                try {
+                    const soundEnabled = soundToggle.classList.contains('active');
+                    const fullscreenEnabled = fullscreenToggle.classList.contains('active');
+                    
+                    configManager.updateSettings({
+                        soundEnabled: soundEnabled,
+                        fullscreenEnabled: fullscreenEnabled
+                    });
+                } catch (error) {
+                    utools.showNotification('保存设置失败:' + error.message);
+                }
+            }
+
+            // 切换音效开关并自动保存
+            soundToggle.addEventListener('click', () => {
+                soundToggle.classList.toggle('active');
+                saveSettings(); // 切换后立即保存
+            });
+            // 切换全屏开关并自动保存
+            fullscreenToggle.addEventListener('click', () => {
+                fullscreenToggle.classList.toggle('active');
+                saveSettings();
+            });
+
+            // 在DOM准备好时立即加载设置
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    checkSystemAndShowFullscreenOption();
+                    loadSettings();
+                    // 显示页面内容
+                    document.body.classList.add('loaded');
+                });
+            } else {
+                // DOM已经准备好了
+                checkSystemAndShowFullscreenOption();
+                loadSettings();
+                document.body.classList.add('loaded');
+            }
+
+            // 全局错误处理（不再提示）
+            window.onerror = function(msg, url, line) {
+                utools.showNotification("设置全局异常:" + error.message)
+            }
+        })();
+    </script>
+</body>
+</html> 

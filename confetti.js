@@ -1,6 +1,12 @@
 // 创建撒花效果实例
 const confettiGun = new ConfettiGun();
 
+// 创建音频对象
+// https://pixabay.com/sound-effects/balloonpop-83760/
+const confettiSound = new Audio('balloonpop.mp3');
+// 设置音量大小 (0.0 到 1.0，0.5 表示 50% 音量)
+confettiSound.volume = 0.5;
+
 // 获取屏幕尺寸
 const screenWidth = window.screen.width
 const screenHeight = window.screen.height
@@ -13,6 +19,16 @@ var defaults = {
 
 // 存储所有的 confetti Promise
 let confettiPromises = [];
+
+// 获取设置
+function getSettings() {
+    try {
+        return utools.dbStorage.getItem('confetti_settings') || { soundEnabled: true };
+    } catch (error) {
+        console.error('获取设置失败:', error);
+        return { soundEnabled: true }; // 默认开启声音
+    }
+}
 
 function fire(particleRatio, opts) {
     // 保存返回的 Promise
@@ -32,6 +48,19 @@ function shoot() {
         if (typeof confetti !== 'function') {
             utools.showNotification("没有找到confetti库")
             return
+        }
+
+        // 获取设置并播放礼花声音
+        const settings = getSettings();
+        if (settings.soundEnabled) {
+            try {
+                confettiSound.currentTime = 0; // 重置音频播放位置
+                confettiSound.play().catch(error => {
+                    utools.showNotification("播放声音失败:" + error.message)
+                });
+            } catch (error) {
+                utools.showNotification("音频播放出错:" + error.message)
+            }
         }
 
         // 清空之前的 promises

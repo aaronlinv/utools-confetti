@@ -15,6 +15,14 @@
                 "confetti"
             ],
             "mainHide": true
+        },
+        {
+            "code": "settings",
+            "explain": "礼花设置",
+            "cmds": [
+                "礼花设置"
+            ],
+            "mainHide": true
         }
     ]
 }
